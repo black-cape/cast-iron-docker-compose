@@ -14,7 +14,9 @@ RUN apt-get update && \
 COPY . /opt/setup
 RUN poetry install --no-dev --no-interaction --no-ansi
 
-FROM ghcr.io/black-cape/cast-iron/worker:latest
+#TODO revert back to latest when done testing
+FROM ghcr.io/black-cape/cast-iron-worker@sha256:2df95ce22727bbce860ed5fef718817863a905f9dd5be816fdf28728af94d791
+#FROM ghcr.io/black-cape/cast-iron/worker:latest
 
 RUN apt-get update && \
   apt-get -y install gcc g++
@@ -26,4 +28,3 @@ COPY --from=0 /opt/setup/.venv /opt/setup/.venv
 ENV PYTHONPATH="/usr/local/lib/python3.8/site-packages/:/opt/setup/.venv/lib/python3.8/site-packages:$PYTHONPATH"
 ENV PATH="$PATH:/opt/setup/.venv/bin"
 
-ADD modules /app/modules

@@ -19,7 +19,7 @@ services:
       - "9092:9092"
     environment:
       KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_CREATE_TOPICS: "postgres:1:1,minio:1:1,pizza-tracker:1:1"
+      KAFKA_CREATE_TOPICS: "greetings:1:1,castiron_etl_config:1:1,castiron_etl_source_file:4:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       zookeeper:
@@ -37,9 +37,14 @@ services:
     environment:
       MINIO_ACCESS_KEY: castiron
       MINIO_SECRET_KEY: castiron
-      MINIO_NOTIFY_KAFKA_BROKERS_docker: kafka:9092
-      MINIO_NOTIFY_KAFKA_ENABLE_docker: 'on'
-      MINIO_NOTIFY_KAFKA_TOPIC_docker: minio
+      #for more information see https://docs.min.io/docs/minio-bucket-notification-guide.html#apache-kafka
+      #the following represent two sets of configs for two separate MINIO notification ARN
+      MINIO_NOTIFY_KAFKA_BROKERS_config: kafka:9092
+      MINIO_NOTIFY_KAFKA_ENABLE_config: 'on'
+      MINIO_NOTIFY_KAFKA_TOPIC_config: castiron_etl_config
+      MINIO_NOTIFY_KAFKA_BROKERS_source: kafka:9092
+      MINIO_NOTIFY_KAFKA_ENABLE_source: 'on'
+      MINIO_NOTIFY_KAFKA_TOPIC_source: castiron_etl_source_file
     entrypoint: /usr/bin/docker-entrypoint.sh server /data
     ports:
       - "9000:9000"
@@ -52,18 +57,4 @@ services:
       timeout: 20s
       start_period: 120s
       retries: 3
-    restart: always
-
-  # Workers
-  worker:
-    build:
-      context: .
-      dockerfile: cast-iron/Dockerfile
-    image: ghcr.io/black-cape/cast-iron/worker:latest
-    environment:
-      KAFKA_BROKER: kafka:9092
-      MINIO_HOST: minio:9000
-    depends_on:
-      - kafka
-      - minio
     restart: always
