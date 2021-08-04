@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+
+  # additional cast iron worker instances can be stood up by replicating block below and changing the consumer group config
+  # for example etl_config_consumer_grp2, .._grp3, .._grp4 ...
+  cast_iron_worker_1:
+    build:
+      context: .
+      dockerfile: Worker_Dockerfile
+    environment:
+      KAFKA_BROKER: kafka:9092
+      MINIO_HOST: minio:9000
+      CONSUMER_GRP_ETL_CONFIG: etl_config_consumer_grp1
+    depends_on:
+      - kafka
+      - minio
+    restart: always
+    volumes:
+      - ../modules/processing:/app/processing
+
+  cast_iron_worker_2:
+    build:
+      context: .
+      dockerfile: Worker_Dockerfile
+    environment:
+      KAFKA_BROKER: kafka:9092
+      MINIO_HOST: minio:9000
+      CONSUMER_GRP_ETL_CONFIG: etl_config_consumer_grp2
+    depends_on:
+      - kafka
+      - minio
+    restart: always
+    volumes:
+      - ../modules/processing:/app/processing
