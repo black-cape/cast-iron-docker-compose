@@ -35,8 +35,8 @@ services:
   minio:
     image: minio/minio
     environment:
-      MINIO_ACCESS_KEY: castiron
-      MINIO_SECRET_KEY: castiron
+      MINIO_ROOT_USER: castiron
+      MINIO_ROOT_PASSWORD: castiron
       #for more information see https://docs.min.io/docs/minio-bucket-notification-guide.html#apache-kafka
       #the following represent two sets of configs for two separate MINIO notification ARN
       MINIO_NOTIFY_KAFKA_BROKERS_config: kafka:9092
@@ -45,9 +45,9 @@ services:
       MINIO_NOTIFY_KAFKA_BROKERS_source: kafka:9092
       MINIO_NOTIFY_KAFKA_ENABLE_source: 'on'
       MINIO_NOTIFY_KAFKA_TOPIC_source: castiron_etl_source_file
-    entrypoint: /usr/bin/docker-entrypoint.sh server /data
+    entrypoint: /usr/bin/docker-entrypoint.sh server /data --console-address :9001
     ports:
-      - "9000:9000"
+      - "9001:9001"
     depends_on:
       kafka:
         condition: service_healthy
