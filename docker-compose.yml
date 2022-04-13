@@ -65,7 +65,7 @@ services:
     container_name: postgres
     ports:
       - "5432:5432"
-    env_file: 
+    environment: 
       POSTGRES_PASSWORD=12345678
       POSTGRES_DB=castiron
       POSTGRES_USER=castiron
